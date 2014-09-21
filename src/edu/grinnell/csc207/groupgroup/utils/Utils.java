@@ -1,5 +1,21 @@
 package edu.grinnell.csc207.groupgroup.utils;
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 
 public class Utils {
-
+	public static BigDecimal sqrt(BigDecimal input, BigDecimal epsilon)
+	{
+			BigDecimal currentApprox = BigDecimal.valueOf(1);
+			while(epsilon.compareTo((input.subtract(currentApprox.multiply(currentApprox))).abs()) < 0)
+			{
+				System.out.println("currentApprox before: " + currentApprox.toPlainString());
+				currentApprox = (currentApprox.add(input.divide(currentApprox,MathContext.DECIMAL128))).divide(BigDecimal.valueOf(2),MathContext.DECIMAL128);
+				System.out.println("currentApprox after: " + currentApprox.toPlainString());
+				System.out.println("currentApprox sq: " + currentApprox.multiply(currentApprox));
+				System.out.println("Input: " + input);
+				System.out.println("compareTo: " + (epsilon.compareTo((input.subtract(currentApprox.multiply(currentApprox))).abs()) < 0));
+			}
+			return currentApprox;
+	}
 }
