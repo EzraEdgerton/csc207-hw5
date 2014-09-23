@@ -17,5 +17,5 @@ public class Utils {
 				System.out.println("compareTo: " + (epsilon.compareTo((input.subtract(currentApprox.multiply(currentApprox))).abs()) < 0));
 			}
 			return currentApprox;
-	}
+	}//returns an estimation of the square root of input
 }
