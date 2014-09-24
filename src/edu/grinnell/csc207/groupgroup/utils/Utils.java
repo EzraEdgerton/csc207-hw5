@@ -2,7 +2,6 @@ package edu.grinnell.csc207.groupgroup.utils;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
-
 public class Utils {
 	public static BigDecimal sqrt(BigDecimal input, BigDecimal epsilon)
 	{
