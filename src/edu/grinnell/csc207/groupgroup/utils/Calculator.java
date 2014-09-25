@@ -60,10 +60,21 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 
 	}
 	
-	public void checkStringFormat(String input) throws InvalidInputStringException
+	private void checkStringFormat(String input) throws InvalidInputStringException
 	{
 		
 		//some quick and dirty equality tests for registers
+		if(input.indexOf('=') != 3)
+		{
+			throw new InvalidInputStringException("Equality operator in incorrect location");
+			
+		}else
+		{
+			if(input.charAt(0) != 'r')
+			{
+				throw new InvalidInputStringException("Equality operator can only be used with registers");
+			}
+		}
 		
 		
 		boolean currentBlockShouldBeOperand = true;
@@ -76,7 +87,6 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 		{
 			sepIndex = input.indexOf(" ");
 			if (sepIndex < 0){// if no space can be found from start of given string
-				System.out.println("Last Block: " + input);
 				currentBlock = input;
 				done = true;
 			} else {
