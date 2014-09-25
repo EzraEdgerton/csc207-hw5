@@ -3,67 +3,114 @@ package edu.grinnell.csc207.groupgroup.utils;
 //import Calculator;
 
 import java.io.PrintWriter;
+import edu.grinnell.csc207.groupgroup.utils.UnknownRegisterException;
+import edu.grinnell.csc207.groupgroup.utils.InvalidInputStringException;
 
 
 public class Calculator {
 //fields    
 Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 
-    public Calculator()
-    {
-	this.r0 = new Fraction("0/1");
-	this.r1 = new Fraction("0/1");
-	this.r2 = new Fraction("0/1");
-	this.r3 = new Fraction("0/1");
-	this.r4 = new Fraction("0/1");
-	this.r5 = new Fraction("0/1");
-	this.r6 = new Fraction("0/1");
-	this.r7 = new Fraction("0/1");
-    }
-    private Fraction stringToFraction(String input)
-    {
-	if(input.indexOf("/") != -1)
-	{
-	    return new Fraction(input);
+	public Calculator() {
+		this.r0 = new Fraction("0/1");
+		this.r1 = new Fraction("0/1");
+		this.r2 = new Fraction("0/1");
+		this.r3 = new Fraction("0/1");
+		this.r4 = new Fraction("0/1");
+		this.r5 = new Fraction("0/1");
+		this.r6 = new Fraction("0/1");
+		this.r7 = new Fraction("0/1");
 	}
-	else if(input.charAt(0) == 'r')
-	{
-	   char regNum = input.charAt(1);
-	   switch(regNum)
-	   {
-	   case '0':{
-	       return this.r0;
-	   }
-	   case '1':{
-	       return this.r1;
-	   }
-	   case '2':{
-	       return this.r2;
-	   }
-	   case '3':{
-	       return this.r3;
-	   }
-	   case '4':{
-	       return this.r4;
-	   }
-	   case '5':{
-	       return this.r5;
-	   }
-	   case '6':{
-	       return this.r6;
-	   }
-	   case '7':{
-	       return this.r7;
-	   }
-	   }
-	}
-	       return new Fraction(Integer.valueOf(input), 1);
+
+	private Fraction stringToFraction(String input) throws UnknownRegisterException {
+		if (input.indexOf("/") != -1) {
+			return new Fraction(input);
+		} else if (input.charAt(0) == 'r') {
+			char regNum = input.charAt(1);
+			switch (regNum) {
+			case '0': {
+				return this.r0;
+			}
+			case '1': {
+				return this.r1;
+			}
+			case '2': {
+				return this.r2;
+			}
+			case '3': {
+				return this.r3;
+			}
+			case '4': {
+				return this.r4;
+			}
+			case '5': {
+				return this.r5;
+			}
+			case '6': {
+				return this.r6;
+			}
+			case '7': {
+				return this.r7;
+			}
+			default: throw new UnknownRegisterException();
+			}
+		}
+		return new Fraction(Integer.valueOf(input), 1);
 
 	}
 	
+	public void checkStringFormat(String input) throws InvalidInputStringException
+	{
+		boolean currentBlockShouldBeOperand = false; //set to false because it's flipped after the first operation
+		String currentBlock = "";
+		boolean done = false;
+		int sepIndex = input.indexOf(" ");
+		char[] operators = {'=', '+', '-', '*', '/', '^'};
+		
+		while (!done)
+		{
+			if (sepIndex < 0){// if no space can be found from start of given string
+				currentBlock = input;
+				done = true;
+			} else {
+				currentBlock = input.substring(0,sepIndex);
+				input = input.substring(sepIndex,input.length());
+				currentBlockShouldBeOperand = !currentBlockShouldBeOperand;
+			}
+			
+			if (currentBlockShouldBeOperand){// Check syntax of the operand
+				try{
+					stringToFraction(currentBlock);
+				}catch (NumberFormatException e){
+					throw new InvalidInputStringException("Format of Operand in Input String is incorrect.");
+				}catch (UnknownRegisterException e){
+					throw new InvalidInputStringException("Register in Input String.");
+				}
+			} else {// Check syntax of the operator
+				if (currentBlock.length() == 1){
+					boolean operatorTest = false;
+					for (int i = 0; i < operators.length; i++){
+						if (currentBlock.charAt(0) == operators[i])
+							operatorTest = true;
+					}
+					
+					if (operatorTest == false)
+						throw new InvalidInputStringException(currentBlock + " is an invalid operator.");
+				} else {
+					throw new InvalidInputStringException(currentBlock + " is not an operator.");
+				}	
+			}
+		}
+		if(currentBlockShouldBeOperand == false)
+		{
+			throw new InvalidInputStringException("Input string ends with an operator");
+		}
+	}
     
-	public Fraction eval(String input)
-	{ 
+	public Fraction eval(String input) throws UnknownRegisterException,InvalidInputStringException
+	{ 	//check if string is properly formatted
+		checkStringFormat(input);
+		
 		Fraction result;
 		char oper;
 		int storageChecker = 0;
@@ -202,7 +249,7 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 		
 		return result;
 	} //calculatorEval0(String input)
-	public static void main(String[] args) throws Exception {
+	/*public static void main(String[] args) throws Exception {
 	   Calculator calc = new Calculator();
 		
 		String thing = "r2 = 12 + -13";
@@ -212,5 +259,5 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 		pen.println(calc.eval("r2 + 2"));
 		// pen.println(test.pow(5));
 		pen.close();
-	}//main(String)
+	}//main(String)*/
 }
