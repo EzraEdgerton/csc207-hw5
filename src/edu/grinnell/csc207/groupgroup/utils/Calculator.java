@@ -26,30 +26,31 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 		if (input.indexOf("/") != -1) {
 			return new Fraction(input);
 		} else if (input.charAt(0) == 'r') {
-			char regNum = input.charAt(1);
+			String regNumString = input.substring(1,input.length());
+			int regNum = Integer.parseInt(regNumString);
 			switch (regNum) {
-			case '0': {
+			case 0: {
 				return this.r0;
 			}
-			case '1': {
+			case 1: {
 				return this.r1;
 			}
-			case '2': {
+			case 2: {
 				return this.r2;
 			}
-			case '3': {
+			case 3: {
 				return this.r3;
 			}
-			case '4': {
+			case 4: {
 				return this.r4;
 			}
-			case '5': {
+			case 5: {
 				return this.r5;
 			}
-			case '6': {
+			case 6: {
 				return this.r6;
 			}
-			case '7': {
+			case 7: {
 				return this.r7;
 			}
 			default: throw new UnknownRegisterException();
@@ -61,7 +62,11 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 	
 	public void checkStringFormat(String input) throws InvalidInputStringException
 	{
-		boolean currentBlockShouldBeOperand = false; //set to false because it's flipped after the first operation
+		
+		//some quick and dirty equality tests for registers
+		
+		
+		boolean currentBlockShouldBeOperand = true;
 		String currentBlock = "";
 		boolean done = false;
 		int sepIndex = input.indexOf(" ");
@@ -69,13 +74,14 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 		
 		while (!done)
 		{
+			sepIndex = input.indexOf(" ");
 			if (sepIndex < 0){// if no space can be found from start of given string
+				System.out.println("Last Block: " + input);
 				currentBlock = input;
 				done = true;
 			} else {
 				currentBlock = input.substring(0,sepIndex);
-				input = input.substring(sepIndex,input.length());
-				currentBlockShouldBeOperand = !currentBlockShouldBeOperand;
+				input = input.substring(sepIndex + 1,input.length());
 			}
 			
 			if (currentBlockShouldBeOperand){// Check syntax of the operand
@@ -84,7 +90,9 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 				}catch (NumberFormatException e){
 					throw new InvalidInputStringException("Format of Operand in Input String is incorrect.");
 				}catch (UnknownRegisterException e){
-					throw new InvalidInputStringException("Register in Input String.");
+					throw new InvalidInputStringException("Register in Input String is invalid");
+				}catch (StringIndexOutOfBoundsException e){
+					throw new InvalidInputStringException("Format of Operand in Input String is incorrect.");
 				}
 			} else {// Check syntax of the operator
 				if (currentBlock.length() == 1){
@@ -100,16 +108,23 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 					throw new InvalidInputStringException(currentBlock + " is not an operator.");
 				}	
 			}
+
+			currentBlockShouldBeOperand = !currentBlockShouldBeOperand;
 		}
-		if(currentBlockShouldBeOperand == false)
+		
+		if(!currentBlockShouldBeOperand == false)
 		{
 			throw new InvalidInputStringException("Input string ends with an operator");
 		}
 	}
     
-	public Fraction eval(String input) throws UnknownRegisterException,InvalidInputStringException
+	public Fraction eval(String input) throws UnknownRegisterException,NumberFormatException
 	{ 	//check if string is properly formatted
-		checkStringFormat(input);
+		try{
+			checkStringFormat(input);
+		}catch (InvalidInputStringException e){
+			System.out.println("ERROR: " + e.getMessage());
+		}
 		
 		Fraction result;
 		char oper;
@@ -249,15 +264,6 @@ Fraction r0, r1, r2, r3, r4, r5, r6, r7;
 		
 		return result;
 	} //calculatorEval0(String input)
-	/*public static void main(String[] args) throws Exception {
-	   Calculator calc = new Calculator();
-		
-		String thing = "r2 = 12 + -13";
-		PrintWriter pen = new PrintWriter(System.out, true);
-		Fraction answer = calc.eval(thing);
-		pen.println(answer);
-		pen.println(calc.eval("r2 + 2"));
-		// pen.println(test.pow(5));
-		pen.close();
-	}//main(String)*/
+	public static void main(String[] args) throws Exception {
+	}//main(String)
 }
